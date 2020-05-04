@@ -8,6 +8,7 @@ import com.project.ordermanagment.repository.CartRepository;
 import com.project.ordermanagment.repository.CustomerRepository;
 import com.project.ordermanagment.repository.OrderProductMapRepository;
 import com.project.ordermanagment.repository.OrderRepository;
+import com.project.ordermanagment.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,16 +32,25 @@ public class OrderController {
 	private CustomerRepository customerRepository;
 
 	@PostMapping(path="/addtocart") // Map ONLY POST Requests
-	public ResponseEntity<String> addItemToCart(@RequestBody Cart cart) {
+	public ResponseEntity<Result> addItemToCart(@RequestBody Cart cart) {
 		cartRepository.save(cart);
-		return new ResponseEntity<>("Item Added to cart", HttpStatus.OK);
+
+		return new ResponseEntity<>(new Result("Added To Cart", "Completed"), HttpStatus.OK);
 	}
 
-	@GetMapping(path="/products/{userId}")
+	@GetMapping(path="/cart/products/{userId}")
 	public ResponseEntity<Iterable<Cart>> getProductsFromCart(@PathVariable String userId) {
 		// This returns a JSON or XML with the user
 		Iterable<Cart> cart = cartRepository.findByUserId(userId);
 		return new ResponseEntity<>(cart,HttpStatus.OK);
+	}
+
+	@PutMapping(path="/addtocart")
+	public ResponseEntity<Result> updateProductsFromCart(@RequestBody Cart cart) {
+		// This returns a JSON or XML with the user
+		cartRepository.deleteByUserIdAndProductId(cart.getUserId(),cart.getProductId());
+		cartRepository.save(cart);
+		return new ResponseEntity<>(new Result("Product Updated", "Completed"),HttpStatus.OK);
 	}
 
 	@DeleteMapping(path="/{orderId}")
@@ -59,11 +69,21 @@ public class OrderController {
 	}
 
 	@PostMapping(path="/createOrder") // Map ONLY POST Requests
-	public ResponseEntity<String> addNewOrder (@RequestBody Orders order) {
+	public ResponseEntity<Result> addNewOrder (@RequestBody Orders order) {
 		String orderId = UUID.randomUUID().toString();
 		order.setOrderId(orderId);
 		orderRepository.save(order);
-		return new ResponseEntity<>(orderId, HttpStatus.OK);
+		List<Cart> products = cartRepository.findByUserId(order.getUserId());
+		for(Cart cart : products) {
+			OrderProductMap map = new OrderProductMap();
+			map.setOrderId(orderId);
+			map.setProductStatus(0);
+			map.setProductId(cart.getProductId());
+			map.setGiftStatus(0);
+			map.setProductUIN("somethng");
+			orderProductMapRepository.save(map);
+		}
+		return new ResponseEntity<>(new Result(orderId, "Created"), HttpStatus.OK);
 	}
 	@PostMapping(path="/products/{orderId}") // Map ONLY POST Requests
 	public ResponseEntity<String> addProducts(@RequestBody List<Cart> products, @PathVariable String orderId) {
