@@ -9,4 +9,7 @@ public interface OrderRepository extends CrudRepository<Orders, Integer> {
 
     Orders findByOrderId(String orderId);
 
+    void deleteByOrderId(String orderId);
+
+
 }

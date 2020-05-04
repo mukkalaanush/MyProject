@@ -6,5 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 public interface OrderProductMapRepository extends CrudRepository<OrderProductMap, Integer> {
-
+       void deleteByOrderId(String orderId);
 }
