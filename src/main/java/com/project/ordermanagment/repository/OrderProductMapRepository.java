@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface OrderProductMapRepository extends CrudRepository<OrderProductMap, Integer> {
        void deleteByOrderId(String orderId);
+
+       List<OrderProductMap>  getOrderProductMapByOrderId(String orderId);
 }

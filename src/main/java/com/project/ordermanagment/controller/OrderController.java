@@ -82,6 +82,8 @@ public class OrderController {
 			map.setGiftStatus(0);
 			map.setProductUIN("somethng");
 			orderProductMapRepository.save(map);
+			cartRepository.deleteByUserIdAndProductId(order.getUserId(),cart.getProductId());
+
 		}
 		return new ResponseEntity<>(new Result(orderId, "Created"), HttpStatus.OK);
 	}
@@ -97,6 +99,13 @@ public class OrderController {
 			orderProductMapRepository.save(map);
 		}
 		return new ResponseEntity<>(orderId, HttpStatus.OK);
+	}
+
+	@GetMapping(path="/{orderId}/products")
+	public ResponseEntity<List<OrderProductMap>> getProductsForOrder(@PathVariable String orderId) {
+		// This returns a JSON or XML with the user
+		List<OrderProductMap> products = orderProductMapRepository.getOrderProductMapByOrderId(orderId);
+		return new ResponseEntity<>(products,HttpStatus.OK);
 	}
 
 	@GetMapping(path="/order")
@@ -118,5 +127,12 @@ public class OrderController {
 		// This returns a JSON or XML with the users
 		Iterable<Customer> users = customerRepository.findAll();
 		return new ResponseEntity<>(users,HttpStatus.OK);
+	}
+
+	@PostMapping(path="/users")
+	public ResponseEntity<Result> postUsers(Customer customer) {
+		// This returns a JSON or XML with the users
+		customerRepository.save(customer);
+		return new ResponseEntity<>(new Result("Created", "Sucess"),HttpStatus.OK);
 	}
 }
