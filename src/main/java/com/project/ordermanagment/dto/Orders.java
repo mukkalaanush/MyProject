@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity // This tells Hibernate to make a table out of this class
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -26,6 +27,17 @@ public class Orders {
 
     @Temporal(TemporalType.DATE)
     private Date orderDispatchTime;
+
+    public List<OrderProductMap> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<OrderProductMap> products) {
+        this.products = products;
+    }
+
+    @Transient
+    private List<OrderProductMap> products;
 
     public String getOrderId() {
         return orderId;

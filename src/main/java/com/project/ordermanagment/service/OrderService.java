@@ -81,8 +81,12 @@ public class OrderService {
 
     public Iterable<Orders> getAllOders() throws OrderProjectException {
         try {
-            return orderRepository.findAll();
-
+            Iterable<Orders> orders = orderRepository.findAll();
+            for(Orders order : orders){
+                List<OrderProductMap> products = orderProductMapRepository.getOrderProductMapByOrderId(order.getOrderId());
+                order.setProducts(products);
+            }
+            return orders;
         } catch (Exception e) {
             throw new OrderProjectException(ErrorCode.SYSTEM_EXCEPTION, "Exception while writing data to persistant layer", e);
         }
@@ -90,9 +94,6 @@ public class OrderService {
     private Boolean validateOrder(Orders order) throws OrderException {
         if (order.getAddressId() == null || order.getAddressId().isEmpty()) {
             throw new OrderException(ErrorCode.BAD_DATA, "Valid Address Id is required");
-        }
-        if (order.getOrderId() == null || order.getOrderId().isEmpty()) {
-            throw new OrderException(ErrorCode.BAD_DATA, "Valid Product Id is required");
         }
         if (order.getUserId() == null || order.getUserId().isEmpty()) {
             throw new OrderException(ErrorCode.BAD_DATA, "Valid User Id is required");
