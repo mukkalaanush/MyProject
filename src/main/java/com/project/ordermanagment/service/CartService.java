@@ -19,6 +19,7 @@ public class CartService {
     public void addProductToCart(Cart cart) throws CartException, OrderProjectException {
         if (validateCart(cart)) {
             try {
+                Cart found = cartRepository.findByUserIdAndproductId(cart.getUserId(),cart.getProductId());
                 cartRepository.save(cart);
             } catch (Exception e) {
                 throw new OrderProjectException(ErrorCode.SYSTEM_EXCEPTION, "Exception while writing data to persistant layer", e);

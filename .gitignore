@@ -1,0 +1,14 @@
+.*
+!/.env
+!/.gitignore
+.DS_Store
+target/
+.idea/
+.idea/workspace.xml
+**/*.iml
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+
+!/.idea/

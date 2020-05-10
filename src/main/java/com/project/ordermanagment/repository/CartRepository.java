@@ -10,4 +10,6 @@ public interface CartRepository extends CrudRepository<Cart, Integer> {
 
       void deleteByUserIdAndProductId(String userId, String productId);
 
+      Cart findByUserIdAndproductId(String userId, String productId);
+
 }

@@ -11,9 +11,6 @@ import java.util.List;
 public class Orders {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
-
     private String orderId;
 
     private String userId;

@@ -19,14 +19,18 @@ import java.util.UUID;
 @Service
 public class OrderService {
 
-    @Autowired
+
     private OrderRepository orderRepository;
-
-    @Autowired
     private CartRepository cartRepository;
+    private OrderProductMapRepository orderProductMapRepository;
 
     @Autowired
-    private OrderProductMapRepository orderProductMapRepository;
+    public OrderService(OrderRepository orderRepository, CartRepository cartRepository, OrderProductMapRepository orderProductMapRepository) {
+        this.orderRepository = orderRepository;
+        this.cartRepository = cartRepository;
+        this.orderProductMapRepository = orderProductMapRepository;
+    }
+
 
     public String createNewOrder(Orders order) throws OrderException, OrderProjectException {
         if (validateOrder(order)) {
@@ -82,7 +86,7 @@ public class OrderService {
     public Iterable<Orders> getAllOders() throws OrderProjectException {
         try {
             Iterable<Orders> orders = orderRepository.findAll();
-            for(Orders order : orders){
+            for (Orders order : orders) {
                 List<OrderProductMap> products = orderProductMapRepository.getOrderProductMapByOrderId(order.getOrderId());
                 order.setProducts(products);
             }
@@ -91,6 +95,7 @@ public class OrderService {
             throw new OrderProjectException(ErrorCode.SYSTEM_EXCEPTION, "Exception while writing data to persistant layer", e);
         }
     }
+
     private Boolean validateOrder(Orders order) throws OrderException {
         if (order.getAddressId() == null || order.getAddressId().isEmpty()) {
             throw new OrderException(ErrorCode.BAD_DATA, "Valid Address Id is required");
